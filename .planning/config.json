@@ -1,0 +1,26 @@
+{
+  "project": {
+    "name": "TokenCUNT",
+    "version": "0.1.0",
+    "type": "developer-tool"
+  },
+  "settings": {
+    "depth": "quick",
+    "execution": "parallel",
+    "git_tracking": true,
+    "research": true,
+    "plan_check": true,
+    "verifier": true,
+    "ai_models": "balanced"
+  },
+  "defaults": {
+    "requirements_approval": "auto",
+    "roadmap_approval": "auto"
+  },
+  "paths": {
+    "project_root": ".",
+    "planning_dir": ".planning",
+    "research_dir": ".planning/research",
+    "phases_dir": ".planning/phases"
+  }
+}
