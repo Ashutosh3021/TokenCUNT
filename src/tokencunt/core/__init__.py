@@ -8,6 +8,7 @@ from tokencunt.core.exceptions import (
     TokenCUNTClientError,
     TokenCUNTTimeoutError,
 )
+from tokencunt.core.token_counter import TokenCounter, TokenUsage
 
 __all__ = [
     "MiniMaxApiClient",
@@ -17,4 +18,6 @@ __all__ = [
     "TokenCUNTRateLimitError",
     "TokenCUNTClientError",
     "TokenCUNTTimeoutError",
+    "TokenCounter",
+    "TokenUsage",
 ]
