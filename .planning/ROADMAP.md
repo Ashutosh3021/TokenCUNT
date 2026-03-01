@@ -39,9 +39,9 @@
 
 ### Plans
 
-- [ ] 01-core-api-client — API client with retry logic
-- [ ] 01-core-token-counter — Token counting functionality
-- [ ] 01-core-budget-session — Budget and session management
+- [x] 01-01-PLAN.md — API client with retry logic
+- [x] 01-02-PLAN.md — Token counting functionality
+- [x] 01-03-PLAN.md — Budget and session management
 
 ---
 
