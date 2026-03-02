@@ -71,8 +71,8 @@
 
 ### Plans
 
-- [ ] 02-cli-setup — Typer setup and basic structure
-- [ ] 02-cli-commands — Implement all CLI commands
+- [x] 02-01-PLAN.md — Typer setup and basic structure
+- [x] 02-02-PLAN.md — Implement all CLI commands
 
 ---
 
