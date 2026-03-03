@@ -14,3 +14,6 @@ Provides-Extra: dev
 Requires-Dist: pytest>=8.0.0; extra == "dev"
 Requires-Dist: pytest-asyncio>=0.23.0; extra == "dev"
 Requires-Dist: ruff>=0.4.0; extra == "dev"
+Provides-Extra: cli
+Requires-Dist: typer[all]>=0.12.0; extra == "cli"
+Requires-Dist: rich>=13.7.0; extra == "cli"
