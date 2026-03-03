@@ -2,6 +2,7 @@
 
 from typing import Any, Optional, Dict
 from decimal import Decimal
+from typing import Any, Dict, Optional, Union
 
 from rich.console import Console
 from rich.panel import Panel
@@ -29,21 +30,21 @@ class OutputFormatter:
     def success(self, message: str) -> None:
         """Print success message."""
         if not self.quiet:
-            self.console.print(f"[bold green]✓[/bold green] {message}")
+            self.console.print(f"[bold green]OK[/bold green] {message}")
 
     def error(self, message: str, suggestion: Optional[str] = None) -> None:
         """Print error message."""
         if suggestion:
-            self.console.print(f"[bold red]✗[/bold red] {message}")
+            self.console.print(f"[bold red]X[/bold red] {message}")
             if not self.quiet:
                 self.console.print(f"[dim]Suggestion: {suggestion}[/dim]")
         else:
-            self.console.print(f"[bold red]✗[/bold red] {message}")
+            self.console.print(f"[bold red]X[/bold red] {message}")
 
     def warning(self, message: str) -> None:
         """Print warning message."""
         if not self.quiet:
-            self.console.print(f"[bold yellow]⚠[/bold yellow] {message}")
+            self.console.print(f"[bold yellow]![/bold yellow] {message}")
 
     def info(self, message: str) -> None:
         """Print info message."""
@@ -89,17 +90,21 @@ class OutputFormatter:
 
     def format_budget_status(
         self,
-        used: Decimal,
-        limit: Decimal,
+        used: Union[int, Decimal],
+        limit: Union[int, Decimal],
     ) -> Table:
         """Format budget status as a table."""
+        # Convert to Decimal for calculations
+        used = Decimal(str(used))
+        limit = Decimal(str(limit))
+
         table = Table(show_header=False, box=None, padding=(0, 1))
         table.add_column("label", style="cyan")
         table.add_column("value", style="white")
 
         percentage = (used / limit * 100) if limit > 0 else Decimal("0")
-        table.add_row("Used:", f"${used:.4f}")
-        table.add_row("Limit:", f"${limit:.4f}")
+        table.add_row("Used:", f"{used:,} tokens")
+        table.add_row("Limit:", f"{limit:,} tokens")
 
         if percentage >= 100:
             style = "bold red"
