@@ -4,6 +4,7 @@ Version: 0.1.0
 Summary: Token counting and budget management for MiniMax API
 Requires-Python: >=3.10
 Description-Content-Type: text/markdown
+License-File: LICENCE
 Requires-Dist: httpx>=0.27.0
 Requires-Dist: tenacity>=8.2.0
 Requires-Dist: tiktoken>=0.7.0
@@ -17,3 +18,240 @@ Requires-Dist: ruff>=0.4.0; extra == "dev"
 Provides-Extra: cli
 Requires-Dist: typer[all]>=0.12.0; extra == "cli"
 Requires-Dist: rich>=13.7.0; extra == "cli"
+Dynamic: license-file
+
+# TokenCUNT
+
+```                                                                                
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%##%%%%%%%%%%%%%%%%%%%%%#=..........-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%#################%%%*:................:#%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%################%%%+......................*%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%##%#######%%%##%%%+.:::.....................-%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%######################:::::..........     ........:%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%######################=:::::...........      ........-%%%%%%%%%%#*==:.......
+%%%%%%%%%%#########################:::::::.........*@@@*............#%##+.................
+%%%%%%%%%%#%######################:::::::.........*@@@@@%.................................
+%%%%%%%%%%#######################:::::::::........:@@@@@+...........:.....................
+%%%%%%%%%#######################:::::::::::::.......*-:...........:::................ ....
+%%%%%%%%#######################=::::::::::::::::...*:.....:..::::::::...............      
+%%%%%%%%######################*:::::::::::::::::::*::::::::::::::::::...............    ..
+%%%%%%#%######################:::::::::::::::::::#::::::::::::::::-:......................
+%%%%%########################*.:::::::::::::::::%::::::::::::::::--:......................
+%%%%%#%######################=.::::::::::::::::#:::::::::::::::---::......................
+%%%%%########################-.:-:---::::-----*---------:::::----:::...................:..
+%%%%%########################-::--------%@@@@+-----------------=-::::...................::
+%%%%##%######################+:--------=@@@@@@----------------=-::::::....................
+%%%%##########################:---------=@@@@+--------------==-:::::::::..................
+%%%%%%%########################----------=========--------==--:::::::::::.................
+%%%%%%%%###%%%##################--------=-==========---====--::::::::::::.................
+%%%%%%###########################----------=======-======---:::::::::::::.................
+%%%%%%%%%##########################=----------=========---::::::::::::::::................
+%%%%%%%%%####%#######################*==------=======-----:::::::::::::::::...............
+%%%%%%%%%%%%%%%###########################****#:::-------::::::::::::::::::::.............
+%%%%%%%%%%##%#%###########:....*##############*..::-----::::::::::::::::::::::............
+%%%%%%%%%%%%%%%######%%%#::......-#%%%%%%%%%%#:..::---::::::::::::::::::::::::::..........
+%%%%%%%%%%%%%%%%%%%%#:::+-::::....::::..-%%%%%...::---::::::::::::::::::::::::::..........
+%%%%%%%%%%%%%%%%%%#.....:----::...:::..:::#%%%..:::---::::::::::::::::::::::::::.:........
+%%%%%%%%%%%%%%%%%%+::::::-=--::::-:::..::::#%%..:::---::::::::::::::::::::::::::::........
+%%%%%%%%%%%%%%%%%%*:::::::-=-------:::::::::#%..:::---::::::::::::::::::::::::::::........
+%%%%%%%%%%%%%%%%#*#=-::::::-==---:---:::.::::*..:::---:::::::::::::::::::::::::::::::.....
+%%%%%%%%%%%%%%=::::-=------:----::----:::..::::.::----::::::::::::::::::::::::::::::..:...
+%%%%%%%%%%%%%*::::::===-=--:--:::------:::::::::..:----:::::::::::::::::::::::::::::::....
+%%%%%%%%%%%%%#:::::::-=----:..:::::::----::....::...---::::::::::::::::::::::::::::::::...
+%%%%%%%%%%%%%%+-:::::--==:.::::::::::::::.......::::.:--::::::::::::::::::::::::::::::::..
+%%%%%%%%%%%%%%#----::::::::::::::::::::::.......::::::.:-:::::::::::::::::::::::::::::::::
+%%%%%%%%%%%%%%%*=---:::::::::::::::::::::.......:::::::..:--::::::::::::::::::::::::::::::
+%%%%%%%%%%%%%%%%+---:::::::::::::-:::::::::......:::::::::::---:::::::::::::::::::::::::::
+%%%%%%%%%%%%%%%%%=-:::::::::::::::-::::::::::::::::::::::::::::----:::::::::::::::::::::::
+%%%%%%%%%%%%%%%%%%=:::::::::::::::::::-::::::::::::::::::::::::::----:::::::::::::::::::::
+%%%%%%%%%%%%%%%%%%%-::::::::::::::::::::::::::::::::::::::::::::::::---:::::::::::::::::::
+%%%%%%%%%%%%%%%%%%%*-::::::::::::::::::::::::::::::::::::::::::::::::::---::::::::::::::::
+%%%%%%%%%%%%%%%%%%%%--:::::::::::::::::::::::::::::::.::::::::::::::::::---:::::::::::::::
+
+```
+
+> **A smart, token-efficient AI layer for developers.**  
+> Stop burning credits. Start knowing exactly what you spend.
+
+---
+
+## Why TokenCUNT?
+
+Most AI tools are careless with your tokens — redundant calls, bloated context, zero visibility. TokenCUNT is the opposite:
+
+- **Efficient by design** — smart batching and context compression minimize wasted calls
+- **Fully transparent** — see exactly how many tokens every operation costs, before and after
+- **You're in control** — set budgets and limits per session or per task
+
+---
+
+## Install
+
+```bash
+pip install tokencunt
+```
+
+---
+
+## Quick Start
+
+```bash
+# Ask a question with full token tracking
+ts ask "explain this function" --file main.py
+
+# Dry run — see the cost before committing
+ts ask "refactor this" --file app.py --dry-run
+
+# Set a session budget
+ts session --budget 5000
+
+# View a usage report for the current session
+ts report
+
+# Analyze a file and get suggestions
+ts analyze --file main.py
+
+# Run multiple tasks from a file
+ts batch --tasks tasks.txt
+```
+
+### Example Output
+
+```
+$ ts ask "what does this function do?" --file utils.py
+
+  Estimated tokens: 312
+  ─────────────────────────────────────
+  Response: This function takes a list and...
+  ─────────────────────────────────────
+  Tokens used:  input: 312  output: 89  total: 401
+  Session total: 1,204 / 5,000 tokens used (24%)
+```
+
+---
+
+## Commands
+
+| Command | What it does |
+|---------|-------------|
+| `ts ask "<prompt>" --file <file>` | Ask a question about a file, with token tracking |
+| `ts ask ... --dry-run` | Preview token cost without making the API call |
+| `ts session --budget <n>` | Set a token budget for the current session |
+| `ts report` | Show a full breakdown of session usage |
+| `ts analyze --file <file>` | Analyze a file and suggest improvements |
+| `ts batch --tasks <file>` | Run multiple tasks in one efficient batch |
+
+---
+
+## Architecture
+
+```
+┌─────────────────────────────────────┐
+│         User Interface              │
+│   CLI Tool  │  VSCode Extension     │
+└─────────────┬───────────────────────┘
+              │
+┌─────────────▼───────────────────────┐
+│           Core Engine               │
+│  - Token counter & tracker          │
+│  - Smart batcher                    │
+│  - Budget enforcer                  │
+│  - Prompt optimizer                 │
+└─────────────┬───────────────────────┘
+              │
+┌─────────────▼───────────────────────┐
+│         MiniMax M2.5 API            │
+└─────────────────────────────────────┘
+```
+
+The core engine is shared — CLI and VSCode extension are just interfaces on top of it.
+
+---
+
+## Project Structure
+
+```
+TokenCUNT/
+├── core/
+│   ├── api_client.py       ← MiniMax API calls
+│   ├── token_counter.py    ← Count tokens before/after
+│   ├── budget.py           ← Budget enforcement & alerts
+│   ├── batcher.py          ← Combine small requests
+│   ├── optimizer.py        ← Compress & strip redundant context
+│   └── session.py          ← Track usage across a session
+├── cli/
+│   ├── main.py             ← Entry point (Typer)
+│   └── commands/
+│       ├── ask.py
+│       ├── analyze.py
+│       ├── batch.py
+│       └── report.py
+├── config/
+│   └── settings.py         ← API key, budget defaults, model config
+├── tests/
+└── README.md
+```
+
+---
+
+## Tech Stack
+
+| Tool | Role |
+|------|------|
+| [Typer](https://typer.tiangolo.com/) | CLI framework |
+| [Rich](https://github.com/Textualize/rich) | Terminal output formatting |
+| [httpx](https://www.python-httpx.org/) | Async HTTP client |
+| [tiktoken](https://github.com/openai/tiktoken) | Token counting |
+
+---
+
+## Configuration
+
+```python
+# config/settings.py
+API_KEY = "<your-minimax-key>"
+API_BASE_URL = "https://api.minimax.chat/v1"
+MODEL = "abab6.5-chat"       # MiniMax M2.5
+DEFAULT_BUDGET = 10000        # tokens per session
+```
+
+---
+
+## Roadmap
+
+| Phase | What | Status |
+|-------|------|--------|
+| 1 | Core engine (Python) | ✅ Done |
+| 2 | CLI — `ask` and `report` commands | ✅ Done |
+| 3 | CLI — `analyze` and `batch` commands | 🔧 In progress |
+| 4 | VSCode extension — status bar + basic commands | 🔲 Up next |
+| 5 | VSCode extension — side panel + inline hints | 🔲 Planned |
+
+---
+
+## VSCode Extension *(coming soon)*
+
+The extension will sit on top of the same Python core:
+
+- **Status bar** — live token usage at a glance (`⚡ 1,204 / 5,000 tokens`)
+- **Inline hints** — hover over a selection to see estimated cost before sending
+- **Budget alerts** — warning popup when you're approaching your limit
+- **Command palette** — `TokenCUNT: Analyze File`, `TokenCUNT: Show Report`
+- **Side panel** — full session breakdown by task
+
+---
+
+## Contributing
+
+Built by a student, for developers who actually care about not burning credits. PRs and issues welcome.
+
+---
+
+## License
+
+MIT

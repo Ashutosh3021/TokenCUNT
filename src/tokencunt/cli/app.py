@@ -7,6 +7,7 @@ import typer
 from typing_extensions import Annotated
 
 from tokencunt.cli.exit_codes import EXIT_SUCCESS
+from tokencunt.cli.logo import LOGO, VERSION, TAGLINE
 
 
 # Global state stored in typer.Context.obj
@@ -75,8 +76,37 @@ def cli_main(
 @app.command()
 def version() -> None:
     """Show version information."""
-    typer.echo("TokenCUNT v0.1.0")
+    typer.echo(VERSION)
+
+
+@app.command()
+def start() -> None:
+    """Show TokenCUNT logo and welcome message."""
+    try:
+        from rich.console import Console
+        from rich.panel import Panel
+        from rich.text import Text
+
+        console = Console()
+        logo_text = Text(LOGO, style="cyan")
+        console.print(
+            Panel(logo_text, title="[bold cyan]TokenCUNT[/bold cyan]", subtitle=TAGLINE)
+        )
+    except Exception:
+        # Fallback if Rich fails
+        typer.echo(LOGO)
+        typer.echo(TAGLINE)
+
+    typer.echo("\nGet started:")
+    typer.echo("  ts --help       Show all commands")
+    typer.echo("  ts ask          Ask a question")
+    typer.echo("  ts analyze      Analyze a file")
+    typer.echo("  ts batch        Process batch tasks")
+    typer.echo("  ts report       View usage report")
 
 
 if __name__ == "__main__":
+    # Import commands to register them with the app
+    from tokencunt.cli import commands  # noqa: F401
+
     app()

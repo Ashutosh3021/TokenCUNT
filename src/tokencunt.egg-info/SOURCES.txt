@@ -1,3 +1,5 @@
+LICENCE
+README.md
 pyproject.toml
 src/tokencunt/config.py
 src/tokencunt.egg-info/PKG-INFO
@@ -10,6 +12,7 @@ src/tokencunt/cli/__init__.py
 src/tokencunt/cli/app.py
 src/tokencunt/cli/exit_codes.py
 src/tokencunt/cli/formatters.py
+src/tokencunt/cli/logo.py
 src/tokencunt/cli/commands/__init__.py
 src/tokencunt/cli/commands/analyze.py
 src/tokencunt/cli/commands/ask.py
