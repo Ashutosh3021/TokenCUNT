@@ -1,8 +1,10 @@
 import * as vscode from 'vscode';
 import { getSessionInfo } from './cli';
-import { createStatusBar, refreshStatusBar } from './statusbar';
+import { createStatusBar, refreshStatusBar, updateStatusBar, resetStatusBar } from './statusbar';
 import { registerHoverProvider } from './hover';
 import { registerCommands } from './commands';
+import { showSetupWebview, isSetupComplete } from './setup-webview';
+import { checkBudgetAlert, resetAlerts, getThresholds } from './alerts';
 
 // Track extension state
 let statusBar: vscode.StatusBarItem;
@@ -29,37 +31,72 @@ export function activate(context: vscode.ExtensionContext): void {
   const commandDisposables = registerCommands(context);
   context.subscriptions.push(...commandDisposables);
 
-  // Show welcome message
-  checkAndShowWelcome();
+  // Check for first-run and setup
+  checkFirstRun(context);
 
-  // Update status bar with current session info
-  refreshStatusBar().catch(() => {
-    // Silently fail if session info unavailable
-  });
+  // Listen for configuration changes
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeConfiguration((e) => {
+      if (e.affectsConfiguration('tokencunt')) {
+        handleConfigurationChange();
+      }
+    })
+  );
+
+  // Update status bar and check budget
+  updateWithBudgetCheck();
 }
 
 /**
  * Check for first-run and show welcome/setup
  */
-async function checkAndShowWelcome(): Promise<void> {
+async function checkFirstRun(context: vscode.ExtensionContext): Promise<void> {
   const config = vscode.workspace.getConfiguration('tokencunt');
   const autoShowSetup = config.get<boolean>('autoShowSetup') ?? true;
   
   if (autoShowSetup) {
-    const apiKey = config.get<string>('apiKey');
+    const setupComplete = await isSetupComplete();
     
-    if (!apiKey) {
-      // First run - show welcome and prompt for setup
-      const response = await vscode.window.showInformationMessage(
-        'TokenCUNT v0.1.0 activated! Would you like to configure your API key?',
-        'Configure Now',
-        'Later'
-      );
-      
-      if (response === 'Configure Now') {
-        vscode.commands.executeCommand('tokencunt.configureApiKey');
-      }
+    if (!setupComplete) {
+      // First run - show setup wizard
+      await showSetupWebview();
     }
+  }
+}
+
+/**
+ * Handle configuration changes
+ */
+function handleConfigurationChange(): void {
+  // Refresh status bar when config changes
+  updateWithBudgetCheck().catch(() => {
+    // Silently fail
+  });
+}
+
+/**
+ * Update status bar and check budget alerts
+ */
+async function updateWithBudgetCheck(): Promise<void> {
+  try {
+    const config = vscode.workspace.getConfiguration('tokencunt');
+    const budget = config.get<number>('budget') || 10000;
+    
+    const sessionInfo = await getSessionInfo();
+    
+    if (sessionInfo) {
+      updateStatusBar(sessionInfo.tokens, budget);
+      
+      // Check for budget alerts
+      checkBudgetAlert(sessionInfo.tokens, budget);
+    } else {
+      resetStatusBar();
+    }
+  } catch (error) {
+    // If we can't get session info, just show initial state
+    const config = vscode.workspace.getConfiguration('tokencunt');
+    const budget = config.get<number>('budget') || 10000;
+    resetStatusBar();
   }
 }
 
@@ -70,36 +107,5 @@ async function checkAndShowWelcome(): Promise<void> {
 export function deactivate(): void {
   // Status bar will be disposed by VSCode when extension deactivates
   // All subscriptions in context.subscriptions are automatically disposed
-}
-
-/**
- * Update the status bar with current session info
- */
-async function updateStatusBar(): Promise<void> {
-  try {
-    const sessionInfo = await getSessionInfo();
-    const config = vscode.workspace.getConfiguration('tokencunt');
-    const budget = config.get<number>('budget') || 10000;
-    
-    if (sessionInfo) {
-      const percent = Math.round((sessionInfo.tokens / budget) * 100);
-      statusBar.text = `⚡ ${sessionInfo.tokens.toLocaleString()} / ${budget.toLocaleString()}`;
-      statusBar.tooltip = `TokenCUNT: ${sessionInfo.tokens} / ${budget} tokens (${percent}%)`;
-      
-      // Color coding
-      if (percent > 80) {
-        statusBar.color = new vscode.ThemeColor('errorForeground');
-      } else if (percent > 50) {
-        statusBar.color = new vscode.ThemeColor('warningForeground');
-      } else {
-        statusBar.color = undefined;
-      }
-    } else {
-      statusBar.text = `⚡ 0 / ${budget.toLocaleString()}`;
-      statusBar.tooltip = `TokenCUNT: No active session`;
-    }
-  } catch (error) {
-    statusBar.text = '⚡ TokenCUNT';
-    statusBar.tooltip = 'TokenCUNT: Click to configure';
-  }
+  resetAlerts();
 }
