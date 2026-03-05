@@ -254,19 +254,71 @@ default_budget: 10000
 |-------|------|--------|
 | 1 | Core engine (Python) | ✅ Done |
 | 2 | CLI Tool | ✅ Done |
-| 3 | VSCode Extension | 🔲 Planned |
+| 3 | VSCode Extension | ✅ Done |
 
 ---
 
-## VSCode Extension *(coming soon)*
+## FAQ
 
-The extension will sit on top of the same Python core:
+### What exact problem does TokenCUNT solve?
 
-- **Status bar** — live token usage at a glance (`⚡ 1,204 / 5,000 tokens`)
-- **Inline hints** — hover over a selection to see estimated cost before sending
-- **Budget alerts** — warning popup when you're approaching your limit
-- **Command palette** — `TokenCUNT: Analyze File`, `TokenCUNT: Show Report`
-- **Side panel** — full session breakdown by task
+TokenCUNT solves the problem of **uncontrolled API costs** when using AI models. Most developers have no visibility into how many tokens their prompts consume, leading to surprise bills at the end of the month. TokenCUNT provides:
+
+- **Pre-call estimation** — Know token cost BEFORE making API calls
+- **Budget enforcement** — Hard limits prevent runaway spending
+- **Usage transparency** — Real-time tracking of all API usage
+- **Session history** — Know exactly what you spent each session
+
+### Who is the primary user?
+
+- **AI developers** building apps with LLMs
+- **SaaS builders** integrating AI into products
+- **Students** learning about LLMs on limited budgets
+- **Freelancers** managing client API budgets
+
+### What input does the user give?
+
+- **Raw text** — Direct prompts
+- **Files** — `.txt`, `.py`, `.js`, `.md`, or any text file
+- **Multiple files** — Via batch processing
+
+### What output does the tool return?
+
+- **Token count** — Before and after API calls
+- **Cost estimation** — Based on model pricing
+- **Session reports** — Detailed breakdown of usage
+
+### Which models are supported?
+
+Currently: **MiniMax** models (abab6.5-chat family)
+
+Future support planned:
+- OpenAI (GPT-4, GPT-3.5)
+- Anthropic (Claude)
+- Google Gemini
+
+### Does it support multiple tokenizers?
+
+Yes — uses **tiktoken** which supports multiple encodings:
+- cl100k_base (GPT-4, Claude, etc.)
+- p50k_base (GPT-3)
+- r50k_base (GPT-2)
+
+### What makes TokenCUNT better than existing token counters?
+
+1. **Pre-call estimation** — Most counters only count AFTER the call
+2. **Budget enforcement** — Most counters only track, don't prevent overspending
+3. **Integrated CLI** — Ready to use, not just a library
+4. **IDE integration** — VSCode extension with inline hints
+
+### Future features planned?
+
+- Prompt cost optimizer
+- Token reduction suggestions  
+- Batch prompt analysis
+- Repo-wide token estimation
+- Multi-model comparison table
+- Cost alerts via webhooks
 
 ---
 

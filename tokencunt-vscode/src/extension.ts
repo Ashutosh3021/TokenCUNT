@@ -22,9 +22,8 @@ export function activate(context: vscode.ExtensionContext): void {
   
   // Register hover provider for token estimation
   const hoverDisposables = registerHoverProvider();
-  if (hoverDisposables && 'hoverProvider' in hoverDisposables) {
-    context.subscriptions.push(hoverDisposables.hoverProvider);
-    context.subscriptions.push(hoverDisposables.sendToTokenCunt);
+  if (hoverDisposables) {
+    context.subscriptions.push(...hoverDisposables);
   }
 
   // Register all commands

@@ -42,16 +42,16 @@ export function updateStatusBar(tokens: number, budget: number): void {
   statusBarItem.text = `⚡ ${tokens.toLocaleString()} / ${budget.toLocaleString()}`;
   statusBarItem.tooltip = `TokenCUNT: ${tokens.toLocaleString()} / ${budget.toLocaleString()} tokens (${percent}%)`;
   
-  // Color coding based on budget usage
+  // Color coding based on budget usage - use codicons in text
   if (percent >= THRESHOLD_CRITICAL) {
     statusBarItem.color = new vscode.ThemeColor('errorForeground');
-    statusBarItem.icon = 'warning';
+    statusBarItem.text = `$(warning) ${tokens.toLocaleString()} / ${budget.toLocaleString()}`;
   } else if (percent >= THRESHOLD_WARNING) {
     statusBarItem.color = new vscode.ThemeColor('warningForeground');
-    statusBarItem.icon = 'zap';
+    statusBarItem.text = `$(zap) ${tokens.toLocaleString()} / ${budget.toLocaleString()}`;
   } else {
     statusBarItem.color = undefined;
-    statusBarItem.icon = 'zap';
+    statusBarItem.text = `$(zap) ${tokens.toLocaleString()} / ${budget.toLocaleString()}`;
   }
 }
 
@@ -66,10 +66,9 @@ export function resetStatusBar(): void {
   const config = vscode.workspace.getConfiguration('tokencunt');
   const budget = config.get<number>('budget') || 10000;
   
-  statusBarItem.text = `⚡ 0 / ${budget.toLocaleString()}`;
+  statusBarItem.text = `$(zap) 0 / ${budget.toLocaleString()}`;
   statusBarItem.tooltip = 'TokenCUNT: No active session';
   statusBarItem.color = undefined;
-  statusBarItem.icon = 'zap';
 }
 
 /**

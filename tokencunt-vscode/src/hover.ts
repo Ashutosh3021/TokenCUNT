@@ -7,7 +7,9 @@ import * as fs from 'fs';
  * Register hover provider for token estimation
  * Shows token count when hovering over selected text
  */
-export function registerHoverProvider(): void {
+export function registerHoverProvider(): vscode.Disposable[] {
+  const disposables: vscode.Disposable[] = [];
+  
   const hoverProvider = vscode.languages.registerHoverProvider(
     '*',  // All languages
     {
@@ -86,8 +88,10 @@ export function registerHoverProvider(): void {
     // Could reload config here if needed
   });
   
-  // Return disposable for cleanup
-  return { hoverProvider, sendToTokenCunt };
+  disposables.push(hoverProvider, sendToTokenCunt);
+  
+  // Return disposables for cleanup
+  return disposables;
 }
 
 /**

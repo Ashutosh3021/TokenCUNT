@@ -198,19 +198,19 @@ export function registerCommands(context: vscode.ExtensionContext): vscode.Dispo
   disposables.push(
     vscode.commands.registerCommand('tokencunt.configureModel', async () => {
       const models = ['abab6.5-chat', 'abab6.5s-chat', 'abab5.5-chat'];
+      const modelItems: vscode.QuickPickItem[] = models.map(m => ({ label: m }));
       
       const config = vscode.workspace.getConfiguration('tokencunt');
       const currentModel = config.get<string>('model') || 'abab6.5-chat';
       
-      const model = await vscode.window.showQuickPick(models, {
+      const selected = await vscode.window.showQuickPick(modelItems, {
         placeHolder: 'Select model',
-        defaultValue: currentModel
       });
 
-      if (!model) { return; }
+      if (!selected) { return; }
 
-      await config.update('model', model, vscode.ConfigurationTarget.Global);
-      vscode.window.showInformationMessage(`Model set to ${model}`);
+      await config.update('model', selected.label, vscode.ConfigurationTarget.Global);
+      vscode.window.showInformationMessage(`Model set to ${selected.label}`);
     })
   );
 
