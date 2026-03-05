@@ -21,7 +21,7 @@
 |-------|--------|-------|
 | 1: Core Engine | ✅ Complete | 3/3 |
 | 2: CLI Tool | ✅ Complete | 2/2 |
-| 3: VSCode Extension | 🔲 Not started | 2 |
+| 3: VSCode Extension | 📋 Planned | 3/3 |
 
 ---
 

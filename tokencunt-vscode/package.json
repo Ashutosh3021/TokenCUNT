@@ -1,0 +1,132 @@
+{
+  "name": "tokencunt",
+  "displayName": "TokenCUNT",
+  "description": "Token tracking and budget management for AI coding sessions",
+  "version": "0.1.0",
+  "publisher": "tokencunt",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other",
+    "Developer Tools"
+  ],
+  "activationEvents": [
+    "workspaceContains:**/*",
+    "onCommand:tokencunt.analyzeFile",
+    "onCommand:tokencunt.showReport",
+    "onCommand:tokencunt.ask",
+    "onCommand:tokencunt.newSession",
+    "onCommand:tokencunt.setBudget",
+    "onCommand:tokencunt.clearSession",
+    "onCommand:tokencunt.configureApiKey",
+    "onCommand:tokencunt.configureModel",
+    "onCommand:tokencunt.viewSettings"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "tokencunt.analyzeFile",
+        "title": "TokenCUNT: Analyze File",
+        "category": "TokenCUNT"
+      },
+      {
+        "command": "tokencunt.showReport",
+        "title": "TokenCUNT: Show Report",
+        "category": "TokenCUNT"
+      },
+      {
+        "command": "tokencunt.ask",
+        "title": "TokenCUNT: Ask",
+        "category": "TokenCUNT"
+      },
+      {
+        "command": "tokencunt.newSession",
+        "title": "TokenCUNT: New Session",
+        "category": "TokenCUNT"
+      },
+      {
+        "command": "tokencunt.setBudget",
+        "title": "TokenCUNT: Set Budget",
+        "category": "TokenCUNT"
+      },
+      {
+        "command": "tokencunt.clearSession",
+        "title": "TokenCUNT: Clear Session",
+        "category": "TokenCUNT"
+      },
+      {
+        "command": "tokencunt.configureApiKey",
+        "title": "TokenCUNT: Configure API Key",
+        "category": "TokenCUNT"
+      },
+      {
+        "command": "tokencunt.configureModel",
+        "title": "TokenCUNT: Configure Model",
+        "category": "TokenCUNT"
+      },
+      {
+        "command": "tokencunt.viewSettings",
+        "title": "TokenCUNT: View Settings",
+        "category": "TokenCUNT"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "when": "editorHasSelection",
+          "command": "tokencunt.analyzeFile",
+          "group": "TokenCUNT"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "TokenCUNT",
+      "properties": {
+        "tokencunt.apiKey": {
+          "type": "string",
+          "description": "MiniMax API Key for token tracking"
+        },
+        "tokencunt.groupId": {
+          "type": "string",
+          "description": "MiniMax Group ID"
+        },
+        "tokencunt.model": {
+          "type": "string",
+          "default": "abab6.5-chat",
+          "description": "Model to use for token tracking"
+        },
+        "tokencunt.budget": {
+          "type": "number",
+          "default": 10000,
+          "description": "Token budget limit"
+        },
+        "tokencunt.autoShowSetup": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show setup wizard on first run"
+        },
+        "tokencunt.cliPath": {
+          "type": "string",
+          "description": "Custom path to TokenCUNT CLI"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@types/vscode": "^1.80.0",
+    "@types/mocha": "^10.0.0",
+    "@vscode/test-electron": "^2.3.0",
+    "typescript": "^5.0.0",
+    "eslint": "^8.0.0"
+  }
+}

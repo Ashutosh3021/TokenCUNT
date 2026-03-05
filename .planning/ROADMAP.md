@@ -101,8 +101,9 @@
 
 ### Plans
 
-- [ ] 03-vscode-setup — Extension scaffolding
-- [ ] 03-vscode-features — Implement all features
+- [p] 03-01-PLAN.md — Extension scaffolding + CLI integration
+- [p] 03-02-PLAN.md — Status bar + inline hints + commands
+- [p] 03-03-PLAN.md — Setup flow webview + budget alerts
 
 ---
 
