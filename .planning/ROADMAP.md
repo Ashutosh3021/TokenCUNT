@@ -144,7 +144,7 @@
 ### Plans
 
 - [x] 04-01-PLAN.md — Repo Scanner
-- [ ] 04-02-PLAN.md — Cost Simulator
+- [x] 04-02-PLAN.md — Cost Simulator
 - [ ] 04-03-PLAN.md — Prompt Diff
 - [ ] 04-04-PLAN.md — Prompt Optimizer
 

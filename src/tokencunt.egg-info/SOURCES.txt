@@ -18,6 +18,7 @@ src/tokencunt/cli/commands/analyze.py
 src/tokencunt/cli/commands/ask.py
 src/tokencunt/cli/commands/batch.py
 src/tokencunt/cli/commands/report.py
+src/tokencunt/cli/commands/scan.py
 src/tokencunt/cli/commands/session.py
 src/tokencunt/core/__init__.py
 src/tokencunt/core/api_client.py
@@ -25,5 +26,6 @@ src/tokencunt/core/batcher.py
 src/tokencunt/core/budget.py
 src/tokencunt/core/exceptions.py
 src/tokencunt/core/optimizer.py
+src/tokencunt/core/scanner.py
 src/tokencunt/core/session.py
 src/tokencunt/core/token_counter.py

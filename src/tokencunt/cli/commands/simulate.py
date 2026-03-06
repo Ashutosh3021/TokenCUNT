@@ -29,6 +29,22 @@ def simulate_command(
             help="Average tokens per request",
         ),
     ] = None,
+    users: Annotated[
+        Optional[int],
+        typer.Option(
+            "--users",
+            "-u",
+            help="Number of users (for user scenario mode)",
+        ),
+    ] = None,
+    messages: Annotated[
+        Optional[int],
+        typer.Option(
+            "--messages",
+            "-M",
+            help="Average messages per user per day (for user scenario mode)",
+        ),
+    ] = None,
     scenario: Annotated[
         Optional[str],
         typer.Option(
@@ -63,6 +79,9 @@ def simulate_command(
         Calculate cost for custom traffic:
         $ ts simulate --requests 1000 --tokens 500
 
+        User scenario mode:
+        $ ts simulate --users 100 --messages 50 --tokens 300
+
         Use pre-defined scenario:
         $ ts simulate --scenario startup --model gpt-4
 
@@ -85,8 +104,39 @@ def simulate_command(
     # Initialize simulator
     simulator = CostSimulator(model=model)
 
-    # Validate inputs
-    if scenario:
+    # Validate inputs - check for user scenario mode
+    if users is not None or messages is not None:
+        # User scenario mode
+        if users is None or messages is None or tokens is None:
+            formatter.error(
+                "User scenario mode requires --users, --messages, and --tokens"
+            )
+            formatter.info(
+                "Example: ts simulate --users 100 --messages 50 --tokens 300"
+            )
+            return EXIT_INVALID_ARGS
+
+        # Validate inputs
+        if users < 0:
+            formatter.error("--users must be non-negative")
+            return EXIT_INVALID_ARGS
+        if messages < 0:
+            formatter.error("--messages must be non-negative")
+            return EXIT_INVALID_ARGS
+        if tokens < 0:
+            formatter.error("--tokens must be non-negative")
+            return EXIT_INVALID_ARGS
+
+        # Run user scenario
+        result = simulator.simulate_user_scenario(
+            users=users,
+            messages_per_user_per_day=messages,
+            tokens_per_message=tokens,
+            model=model,
+        )
+        scenario_name = f"User Scenario ({users} users)"
+
+    elif scenario:
         # Scenario mode
         if scenario not in SCENARIOS:
             formatter.error(

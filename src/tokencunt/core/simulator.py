@@ -231,6 +231,42 @@ class CostSimulator:
 
         return result
 
+    def simulate_user_scenario(
+        self,
+        users: int,
+        messages_per_user_per_day: int,
+        tokens_per_message: int,
+        model: str = None,
+    ) -> dict:
+        """
+        Calculate cost based on user activity scenarios.
+
+        Args:
+            users: Number of active users
+            messages_per_user_per_day: Average messages each user sends per day
+            tokens_per_message: Average tokens (input+output) per message
+            model: Model to use
+
+        Returns:
+            Cost calculation dictionary from simulate_traffic
+        """
+        # Calculate total daily requests
+        requests_per_day = users * messages_per_user_per_day
+
+        # Run traffic simulation
+        result = self.simulate_traffic(
+            requests_per_day=requests_per_day,
+            avg_tokens_per_request=tokens_per_message,
+            model=model,
+        )
+
+        # Override scenario name
+        result["scenario"] = f"User Scenario ({users} users)"
+        result["users"] = users
+        result["messages_per_user_per_day"] = messages_per_user_per_day
+
+        return result
+
     def get_cost_breakdown(self) -> dict:
         """
         Get cost breakdown for all models/tiers.
