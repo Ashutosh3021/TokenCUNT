@@ -191,22 +191,24 @@ class PromptDiffer:
         orig_tokens = f"{stats.original_tokens:,}"
         opt_tokens = f"{stats.optimized_tokens:,}"
 
-        # Format percentage with arrow indicator
+        # Format percentage with arrow indicator (use ASCII-safe alternatives)
         if stats.percent_saved > 0:
-            percent_indicator = f"↓ {stats.percent_saved:.1f}%"
+            percent_indicator = f"(-{stats.percent_saved:.1f}%)"
         elif stats.percent_saved < 0:
-            percent_indicator = f"↑ {abs(stats.percent_saved):.1f}%"
+            percent_indicator = f"(+{abs(stats.percent_saved):.1f}%)"
         else:
-            percent_indicator = "0%"
+            percent_indicator = "(0%)"
 
         # Format costs
         orig_cost = f"${stats.original_cost:.3f}"
         opt_cost = f"${stats.optimized_cost:.3f}"
 
         if stats.cost_saved > 0:
-            cost_indicator = f"↓ ${stats.cost_saved:.3f}"
+            cost_indicator = f"(-${stats.cost_saved:.3f})"
         elif stats.cost_saved < 0:
-            cost_indicator = f"↑ ${abs(stats.cost_saved):.3f}"
+            cost_indicator = f"(+${abs(stats.cost_saved):.3f})"
+        else:
+            cost_indicator = "($0.000)"
         else:
             cost_indicator = "$0.000"
 
