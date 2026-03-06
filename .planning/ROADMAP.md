@@ -107,6 +107,49 @@
 
 ---
 
+## Phase 4: Advanced Features
+
+**Goal:** Add advanced developer tools for token optimization and cost management
+
+### Objectives
+
+1. **Repo Scanner** — Scan entire project for token estimation
+2. **Cost Simulator** — Calculate monthly costs based on traffic
+3. **Prompt Diff** — Git-style diff for prompt changes
+4. **Prompt Optimizer** — AI + rule-based prompt optimization
+
+### Commands
+
+| Command | Description |
+|---------|-------------|
+| `ts scan` | Scan project directory for token estimation |
+| `ts simulate` | Calculate monthly costs based on traffic |
+| `ts diff` | Compare original vs optimized prompts |
+| `ts optimize` | Optimize prompts for lower token count |
+
+### Priority
+
+1. **Repo Scanner** — Immediate value, easiest to implement
+2. **Cost Simulator** — Turns tokens into business insight
+3. **Prompt Diff** — Nice developer UX
+4. **Prompt Optimizer** — Hardest feature
+
+### Implementation Decisions
+
+- **Prompt Optimizer:** AI + rule-based hybrid
+- **Repo Scanner:** Configurable patterns + `.tokencuntignore`
+- **Cost Simulator:** Support traffic estimates AND user scenarios
+- **Prompt Diff:** Git-style diff output
+
+### Plans
+
+- [x] 04-01-PLAN.md — Repo Scanner
+- [ ] 04-02-PLAN.md — Cost Simulator
+- [ ] 04-03-PLAN.md — Prompt Diff
+- [ ] 04-04-PLAN.md — Prompt Optimizer
+
+---
+
 ## Phase Timeline
 
 | Phase | Focus | Complexity |
@@ -114,15 +157,17 @@
 | 1 | Core Engine | Medium |
 | 2 | CLI Tool | Low |
 | 3 | VSCode Extension | Medium |
+| 4 | Advanced Features | Medium |
 
 ---
 
 ## Dependencies
 
 ```
-Phase 1 (Core)  →  No dependencies
-Phase 2 (CLI)   →  Requires Phase 1
-Phase 3 (VSCode) → Requires Phase 1
+Phase 1 (Core)      →  No dependencies
+Phase 2 (CLI)       →  Requires Phase 1
+Phase 3 (VSCode)     →  Requires Phase 1
+Phase 4 (Advanced)   →  Requires Phase 1
 ```
 
 ---

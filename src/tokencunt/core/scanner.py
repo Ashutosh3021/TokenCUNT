@@ -1,36 +1,37 @@
-"""Repository scanner module for token estimation."""
+"""Repository scanner for token estimation across entire projects."""
 
-import os
 import fnmatch
-from dataclasses import dataclass
+import os
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Callable
 
 from tokencunt.core.token_counter import TokenCounter
 
 
-# Default patterns to ignore
-DEFAULT_IGNORE_PATTERNS = [
-    "node_modules/",
-    ".git/",
-    "__pycache__/",
+# Default ignore patterns
+DEFAULT_IGNORES = [
+    "node_modules",
+    ".git",
+    "__pycache__",
+    ".venv",
+    "venv",
+    "dist",
+    "build",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".ruff_cache",
     "*.pyc",
-    ".venv/",
-    "venv/",
-    "env/",
-    "dist/",
-    "build/",
-    "*.egg-info/",
-    ".pytest_cache/",
-    ".mypy_cache/",
-    ".tox/",
-    "*.log",
+    "*.pyo",
     ".DS_Store",
-    "Thumbs.db",
+    "*.egg-info",
+    ".tox",
+    "vendor",
+    "target",
 ]
 
-# File extensions to scan
-CODE_EXTENSIONS = {
+# Supported file extensions
+SUPPORTED_EXTENSIONS = {
     ".py",
     ".js",
     ".ts",
@@ -39,12 +40,6 @@ CODE_EXTENSIONS = {
     ".go",
     ".rs",
     ".java",
-    ".c",
-    ".cpp",
-    ".h",
-    ".hpp",
-}
-TEXT_EXTENSIONS = {
     ".txt",
     ".md",
     ".json",
@@ -54,51 +49,97 @@ TEXT_EXTENSIONS = {
     ".toml",
     ".ini",
     ".env",
-    ".sql",
     ".sh",
     ".bash",
+    ".zsh",
+    ".c",
+    ".cpp",
+    ".h",
+    ".hpp",
+    ".cs",
+    ".rb",
+    ".php",
+    ".swift",
+    ".kt",
+    ".scala",
+    ".sql",
+    ".html",
+    ".css",
+    ".scss",
+    ".sass",
+    ".less",
 }
 
 
 @dataclass
 class FileResult:
-    """Result for a single file."""
+    """Result for a single file scan."""
 
     path: Path
     tokens: int
     lines: int
+    size_bytes: int
 
 
 @dataclass
 class ScanResult:
-    """Result for a complete scan."""
+    """Result of a complete repository scan."""
 
-    files: list[FileResult]
-    total_tokens: int
-    total_lines: int
-    total_files: int
-    scanned_files: int
-    ignored_files: int
+    files: list[FileResult] = field(default_factory=list)
+    total_tokens: int = 0
+    total_lines: int = 0
+    total_files: int = 0
+    total_size_bytes: int = 0
 
-    def estimate_cost(
-        self, input_cost_per_1k: float = 0.001, output_cost_per_1k: float = 0.003
-    ) -> float:
-        """Estimate cost for total tokens."""
-        return (self.total_tokens / 1000) * input_cost_per_1k
+    # Estimated cost (assuming $0.001 per 1K input tokens)
+    estimated_cost: float = 0.0
+
+    # File counts by extension
+    files_by_extension: dict[str, int] = field(default_factory=dict)
+    tokens_by_extension: dict[str, int] = field(default_factory=dict)
+
+    def add_file(self, result: FileResult) -> None:
+        """Add a file result to the scan."""
+        self.files.append(result)
+        self.total_tokens += result.tokens
+        self.total_lines += result.lines
+        self.total_size_bytes += result.size_bytes
+        self.total_files += 1
+
+        # Update extension stats
+        ext = result.path.suffix.lower() or "no_ext"
+        self.files_by_extension[ext] = self.files_by_extension.get(ext, 0) + 1
+        self.tokens_by_extension[ext] = (
+            self.tokens_by_extension.get(ext, 0) + result.tokens
+        )
+
+        # Estimate cost (rough estimate: $0.001 per 1K tokens)
+        self.estimated_cost = (self.total_tokens / 1000) * 0.001
 
 
 class RepoScanner:
-    """Scanner for estimating tokens in a repository."""
+    """Scanner for analyzing token counts across a repository."""
 
-    def __init__(self, model: str = "gpt-4"):
-        """Initialize scanner."""
-        self.token_counter = TokenCounter(model=model)
-        self.ignore_patterns = list(DEFAULT_IGNORE_PATTERNS)
-        self.file_extensions = CODE_EXTENSIONS | TEXT_EXTENSIONS
+    def __init__(
+        self,
+        ignore_patterns: Optional[list[str]] = None,
+        extensions: Optional[set[str]] = None,
+    ):
+        """
+        Initialize the scanner.
+
+        Args:
+            ignore_patterns: List of patterns to ignore (fnmatch style)
+            extensions: Set of file extensions to include (with dots)
+        """
+        self.ignore_patterns = ignore_patterns or DEFAULT_IGNORES.copy()
+        self.extensions = extensions or SUPPORTED_EXTENSIONS
+        self.token_counter = TokenCounter()
+        self._loaded_ignores: list[str] = []
 
     def load_ignore_file(self, path: Path) -> None:
         """
-        Load ignore patterns from .tokencuntignore file.
+        Load ignore patterns from a file.
 
         Args:
             path: Path to .tokencuntignore file
@@ -106,54 +147,47 @@ class RepoScanner:
         if not path.exists():
             return
 
-        with open(path, "r", encoding="utf-8") as f:
-            for line in f:
-                line = line.strip()
-                if line and not line.startswith("#"):
-                    self.ignore_patterns.append(line)
+        patterns = []
+        for line in path.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            # Skip empty lines and comments
+            if line and not line.startswith("#"):
+                patterns.append(line)
 
-    def should_ignore(self, file_path: Path, root_path: Path) -> bool:
+        self._loaded_ignores = patterns
+
+    def should_ignore(self, file_path: Path) -> bool:
         """
         Check if a file should be ignored.
 
         Args:
-            file_path: Full path to the file
-            root_path: Root directory being scanned
+            file_path: Path to check
 
         Returns:
             True if file should be ignored
         """
-        # Get relative path for pattern matching
-        try:
-            rel_path = file_path.relative_to(root_path)
-        except ValueError:
-            return True
+        path_str = str(file_path)
+        relative_path = file_path.name
 
-        # Convert to string for pattern matching
-        rel_str = str(rel_path)
-        path_parts = rel_path.parts
+        # Check against default patterns and loaded ignores
+        all_patterns = self.ignore_patterns + self._loaded_ignores
 
-        for pattern in self.ignore_patterns:
-            # Handle directory patterns (ending with /)
+        for pattern in all_patterns:
+            # Directory pattern (ends with /)
             if pattern.endswith("/"):
                 dir_pattern = pattern.rstrip("/")
-                for part in path_parts:
-                    if fnmatch.fnmatch(part, dir_pattern):
-                        return True
-            # Handle file patterns
-            else:
-                if fnmatch.fnmatch(rel_str, pattern) or fnmatch.fnmatch(
-                    file_path.name, pattern
-                ):
+                if dir_pattern in path_str.split(os.sep):
                     return True
+            # File/directory name pattern
+            elif fnmatch.fnmatch(relative_path, pattern):
+                return True
+            # Path contains pattern
+            elif pattern in path_str:
+                return True
 
         return False
 
-    def is_supported(self, file_path: Path) -> bool:
-        """Check if file extension is supported."""
-        return file_path.suffix.lower() in self.file_extensions
-
-    def count_file_tokens(self, file_path: Path) -> tuple[int, int]:
+    def count_file_tokens(self, file_path: Path) -> Optional[FileResult]:
         """
         Count tokens in a single file.
 
@@ -161,87 +195,125 @@ class RepoScanner:
             file_path: Path to file
 
         Returns:
-            Tuple of (token_count, line_count)
+            FileResult with token count, or None if file should be skipped
         """
+        if not file_path.exists():
+            return None
+
+        if self.should_ignore(file_path):
+            return None
+
+        # Check if extension is supported
+        if file_path.suffix.lower() not in self.extensions:
+            return None
+
         try:
-            with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
-                content = f.read()
-                lines = len(content.splitlines())
-                tokens = self.token_counter.estimate(content)
-                return tokens, lines
-        except (IOError, OSError):
-            return 0, 0
+            content = file_path.read_text(encoding="utf-8", errors="ignore")
+        except Exception:
+            return None
+
+        tokens = self.token_counter.count(content)
+        lines = len(content.splitlines())
+        size = file_path.stat().st_size
+
+        return FileResult(
+            path=file_path,
+            tokens=tokens,
+            lines=lines,
+            size_bytes=size,
+        )
 
     def scan_directory(
         self,
         path: Path,
         patterns: Optional[list[str]] = None,
-        ignore_file: Optional[Path] = None,
     ) -> ScanResult:
         """
         Scan a directory recursively for token estimation.
 
         Args:
-            path: Directory to scan
-            patterns: Additional file patterns to match
-            ignore_file: Path to .tokencuntignore file
+            path: Root directory to scan
+            patterns: Optional additional ignore patterns
 
         Returns:
-            ScanResult with all file counts and totals
+            ScanResult with aggregated token counts
         """
-        path = Path(path).resolve()
+        result = ScanResult()
+
+        if patterns:
+            self.ignore_patterns.extend(patterns)
+
         if not path.exists():
-            raise FileNotFoundError(f"Path does not exist: {path}")
+            return result
+
         if not path.is_dir():
-            raise NotADirectoryError(f"Path is not a directory: {path}")
+            # Single file
+            file_result = self.count_file_tokens(path)
+            if file_result:
+                result.add_file(file_result)
+            return result
 
-        # Load ignore file if provided
-        if ignore_file:
-            self.load_ignore_file(ignore_file)
-        else:
-            # Check for .tokencuntignore in the scan directory
-            default_ignore = path / ".tokencuntignore"
-            if default_ignore.exists():
-                self.load_ignore_file(default_ignore)
-
-        # Collect files
-        files_to_scan: list[Path] = []
-        ignored_count = 0
-
-        for root, dirs, filenames in os.walk(path):
+        # Walk directory tree
+        for root, dirs, files in os.walk(path):
             root_path = Path(root)
 
             # Filter out ignored directories in-place
-            dirs[:] = [d for d in dirs if not self.should_ignore(root_path / d, path)]
+            dirs[:] = [d for d in dirs if not self.should_ignore(root_path / d)]
 
-            for filename in filenames:
+            for filename in files:
                 file_path = root_path / filename
 
-                if self.should_ignore(file_path, path):
-                    ignored_count += 1
+                if self.should_ignore(file_path):
                     continue
 
-                if not self.is_supported(file_path):
-                    continue
+                file_result = self.count_file_tokens(file_path)
+                if file_result:
+                    result.add_file(file_result)
 
-                files_to_scan.append(file_path)
+        return result
 
-        # Count tokens for each file
-        results: list[FileResult] = []
-        total_tokens = 0
-        total_lines = 0
+    def scan_with_progress(
+        self,
+        path: Path,
+        progress_callback: Optional[Callable[[Path, int, int], None]] = None,
+    ) -> ScanResult:
+        """
+        Scan with optional progress callback.
 
-        for file_path in files_to_scan:
-            tokens, lines = self.count_file_tokens(file_path)
-            results.append(FileResult(path=file_path, tokens=tokens, lines=lines))
-            total_tokens += tokens
-            total_lines += lines
+        Args:
+            path: Root directory to scan
+            progress_callback: Called with (current_file, total_so_far)
 
-        return ScanResult(
-            files=results,
-            total_tokens=total_tokens,
-            total_lines=total_lines,
-            total_files=len(results),
-            scanned_files=len(results),
-            ignored_files=ignored_count,
-        )
+        Returns:
+            ScanResult with aggregated token counts
+        """
+        result = ScanResult()
+
+        if not path.exists():
+            return result
+
+        # Collect all files first
+        all_files: list[Path] = []
+
+        if path.is_file():
+            all_files = [path]
+        else:
+            for root, dirs, files in os.walk(path):
+                root_path = Path(root)
+                dirs[:] = [d for d in dirs if not self.should_ignore(root_path / d)]
+
+                for filename in files:
+                    file_path = root_path / filename
+                    if not self.should_ignore(file_path):
+                        all_files.append(file_path)
+
+        # Process files
+        for i, file_path in enumerate(all_files):
+            file_result = self.count_file_tokens(file_path)
+            if file_result:
+                result.add_file(file_result)
+
+            if progress_callback:
+                progress_callback(file_path, i + 1, len(all_files))
+
+        return result

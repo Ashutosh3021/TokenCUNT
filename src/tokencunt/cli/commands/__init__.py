@@ -1,6 +1,6 @@
 """CLI commands package."""
 
 # Import all commands to register them with the app
-from tokencunt.cli.commands import ask, analyze, batch, report, session
+from tokencunt.cli.commands import ask, analyze, batch, report, session, scan
 
-__all__ = ["ask", "analyze", "batch", "report", "session"]
+__all__ = ["ask", "analyze", "batch", "report", "session", "scan"]
