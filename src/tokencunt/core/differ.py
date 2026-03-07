@@ -208,8 +208,6 @@ class PromptDiffer:
         elif stats.cost_saved < 0:
             cost_indicator = f"(+${abs(stats.cost_saved):.3f})"
         else:
-            cost_indicator = "($0.000)"
-        else:
             cost_indicator = "$0.000"
 
         return f"Tokens: {orig_tokens} → {opt_tokens} ({percent_indicator})\nCost: {orig_cost} → {opt_cost} ({cost_indicator})"
