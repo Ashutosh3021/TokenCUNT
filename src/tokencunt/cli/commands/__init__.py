@@ -10,6 +10,7 @@ from tokencunt.cli.commands import (
     scan,
     simulate,
     diff,
+    optimize,
 )
 
-__all__ = ["ask", "analyze", "batch", "report", "session", "scan", "simulate", "diff"]
+__all__ = ["ask", "analyze", "batch", "report", "session", "scan", "simulate", "diff", "optimize"]
