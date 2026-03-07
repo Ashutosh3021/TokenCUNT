@@ -11,7 +11,7 @@
 | **Name** | TokenCUNT |
 | **Version** | 0.1.0 |
 | **Type** | Developer Tool |
-| **Status** | ✅ Phase 3 Complete |
+| **Status** | ✅ Phase 4 Complete |
 
 ---
 
@@ -22,15 +22,15 @@
 | 1: Core Engine | ✅ Complete | 3/3 |
 | 2: CLI Tool | ✅ Complete | 2/2 |
 | 3: VSCode Extension | ✅ Complete | 3/3 |
-| 4: Advanced Features | 🔄 In Progress | 2/4 |
+| 4: Advanced Features | ✅ Complete | 4/4 |
 
 ---
 
 ## Current Position
 
-- **Last Phase:** 03-vscode-extension (Complete)
-- **Current Phase:** 04-advanced-features (Plan 02 Complete)
-- **Ready for Execution:** Yes
+- **Last Phase:** 04-advanced-features (Complete)
+- **Current Phase:** None (All phases complete)
+- **Ready for Execution:** No
 
 ---
 
@@ -52,7 +52,7 @@
 - **Environment variables** for configuration
 
 ### CLI Commands
-- **All 5 commands implemented**: ask, analyze, batch, report, session
+- **All 9 commands implemented**: ask, analyze, batch, report, session, scan, simulate, diff, optimize
 - **Dry-run mode default** (--dry-run/--no-dry-run)
 - **Global --json flag** for machine-readable output
 
@@ -81,12 +81,18 @@
 - [x] VSCODE-03: Command palette integration
 - [x] VSCODE-04: Budget alerts (warning when approaching limit)
 - [x] VSCODE-05: Setup flow for API key configuration
+- [x] ADV-01: ts scan command scans directory recursively
+- [x] ADV-02: ts scan respects .tokencuntignore file
+- [x] ADV-03: ts scan shows per-file and total token counts
+- [x] ADV-04: ts simulate command calculates monthly costs
+- [x] ADV-05: ts diff command shows git-style diff for prompts
+- [x] ADV-06: ts optimize uses rule-based optimization
 
 ---
 
 ## Pending Items
 
-*None - All phases complete!*
+*All phases complete!*
 
 ---
 
@@ -106,8 +112,11 @@
 - Phase 3 VSCode Extension completed with all 3 plans
 - VSCode extension in tokencunt-vscode/ directory
 - All features: status bar, hover hints, command palette, setup webview, budget alerts
-- Phase 4 Advanced Features started with Plan 01 (Repo Scanner) complete
-- Plan 02 (Cost Simulator) complete - ts simulate command added
+- Phase 4 Advanced Features completed:
+  - Plan 04-01: Repo Scanner (`ts scan`)
+  - Plan 04-02: Cost Simulator (`ts simulate`)
+  - Plan 04-03: Prompt Diff (`ts diff`)
+  - Plan 04-04: Prompt Optimizer (`ts optimize`)
 
 ---
 
