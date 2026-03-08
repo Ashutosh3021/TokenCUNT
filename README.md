@@ -4,6 +4,7 @@
 ![Version](https://img.shields.io/badge/version-1.20.1-green)
 ![License](https://img.shields.io/badge/license-MIT-yellow)
 ![Status](https://img.shields.io/badge/status-In%20Progress-orange)
+[![Download VSIX](https://img.shields.io/badge/Download-VSIX-blue?logo=visual-studio-code)](tokencunt-vscode/tokencunt-0.1.0.vsix)
 
 ```
  _______    _                    _____  * 
@@ -46,6 +47,28 @@ pip install -e ".[cli,dev]"
 
 - Python 3.10+
 - MiniMax API key
+
+### VSCode Extension
+
+Download and install the VSCode extension:
+
+```bash
+# Option 1: Install from VSIX file
+code --install-extension tokencunt-vscode/tokencunt-0.1.0.vsix
+
+# Option 2: Manual install
+# 1. Open VSCode
+# 2. Go to Extensions (Ctrl+Shift+X)
+# 3. Click "..." menu → "Install from VSIX"
+# 4. Select tokencunt-0.1.0.vsix
+```
+
+**VSCode Extension Features:**
+- Status bar with live token count
+- Inline hover hints for token estimation
+- Command palette integration
+- Budget alerts when approaching limit
+- Quick actions via Ctrl+Shift+P
 
 ---
 
