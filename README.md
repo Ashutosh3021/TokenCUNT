@@ -4,7 +4,7 @@
 ![Version](https://img.shields.io/badge/version-1.20.1-green)
 ![License](https://img.shields.io/badge/license-MIT-yellow)
 ![Status](https://img.shields.io/badge/status-In%20Progress-orange)
-[![Download VSIX](https://img.shields.io/badge/Download-VSIX-blue?logo=visual-studio-code)](tokencunt-vscode/tokencunt-0.1.0.vsix)
+[![Download VSIX](https://img.shields.io/badge/Download-VSIX-blue?logo=visual-studio-code)](tokencunt-vscode\tokencunt-1.38.1.vsix)
 
 ```
  _______    _                    _____  * 
