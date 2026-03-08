@@ -116,6 +116,22 @@ ts session config --budget 5000
 | `ts session clear` | Clear session data |
 | `ts version` | Show version information |
 
+### Phase 4: Advanced Features
+
+| Command | Description |
+|---------|-------------|
+| `ts scan <path>` | Scan project for token estimation |
+| `ts scan --extensions py,js --verbose` | Scan with specific extensions |
+| `ts scan --ignore .tokencuntignore` | Scan with custom ignore file |
+| `ts simulate --requests 1000 --tokens 500` | Simulate API costs |
+| `ts simulate --scenario startup --model gpt-4` | Use pre-defined scenario |
+| `ts simulate --users 100 --messages 50 --tokens 300` | User-based scenario |
+| `ts diff original.txt optimized.txt` | Git-style prompt diff |
+| `ts diff --stats` | Show only statistics |
+| `ts optimize prompt.txt` | Optimize with AI + rules |
+| `ts optimize prompt.txt --rules-only` | Rules-only optimization |
+| `ts optimize --show-diff` | Show changes made |
+
 ### Global Options
 
 | Option | Description |
@@ -255,6 +271,137 @@ default_budget: 10000
 | 1 | Core engine (Python) | ✅ Done |
 | 2 | CLI Tool | ✅ Done |
 | 3 | VSCode Extension | ✅ Done |
+| 4 | Advanced Features (scan, simulate, diff, optimize) | ✅ Done |
+
+---
+
+## Pro Tips for Maximum Leverage
+
+### 1. Use `ts scan` Before Starting New Projects
+
+```bash
+# Get a baseline of your project size
+ts scan ./src
+
+# Know your context window limits
+# Large projects = split into smaller prompts
+```
+
+### 2. Set Budget Alerts Early
+
+```bash
+# Set a monthly budget
+ts session config --budget 50000
+
+# The extension will warn you at 80%
+# You can stop before hitting the limit
+```
+
+### 3. Use `ts diff` to Compare Prompt Strategies
+
+```bash
+# Compare verbose vs concise prompts
+ts diff verbose_prompt.txt concise_prompt.txt
+
+# See exactly how much you're saving
+# Use the optimized version in production
+```
+
+### 4. Optimize with Rules-First (Free!)
+
+```bash
+# Rules-only is instant and free
+ts optimize prompt.txt --rules-only
+
+# Then enhance with AI if needed
+ts optimize optimized.txt --ai-only --show-diff
+```
+
+### 5. Simulate Before Scaling
+
+```bash
+# Before launching to 1000 users
+ts simulate --users 1000 --messages 100 --tokens 500 --model gpt-4
+
+# Know your monthly burn rate
+# Adjust model to fit budget
+```
+
+### 6. Use the VSCode Extension for Quick Analysis
+
+- **Analyze selected code** — Select code → right-click → TokenCUNT: Analyze
+- **Quick prompts** — Use command palette for fast access
+- **Status bar** — Always know your current session usage
+
+### 7. Batch Similar Tasks
+
+```bash
+# Create tasks.json
+# {
+#   "tasks": [
+#     {"prompt": "Explain function 1", "file": "src/a.py"},
+#     {"prompt": "Explain function 2", "file": "src/b.py"}
+#   ]
+# }
+
+ts batch --file tasks.json --parallel
+```
+
+### 8. Use `--dry-run` for Cost Previewing
+
+```bash
+# Always check cost first
+ts ask "refactor this entire file" --file huge.py --dry-run
+
+# If too expensive, break into smaller chunks
+ts ask "refactor first 50 lines" --file huge.py
+```
+
+---
+
+## Example Workflows
+
+### Daily Development
+```bash
+# Morning: Check budget
+ts report
+
+# During: Analyze before asking
+ts analyze --file problem.py --focus bugs
+
+# Ask with tracking
+ts ask "fix this bug" --file problem.py
+
+# End: Review spending
+ts report
+```
+
+### Project Token Audit
+```bash
+# 1. Scan entire project
+ts scan ./src --verbose
+
+# 2. Simulate your usage pattern
+ts simulate --scenario startup --model minimax
+
+# 3. Optimize your most-used prompts
+ts optimize common_prompts.txt --rules-only --output optimized/
+
+# 4. Diff to compare
+ts diff common_prompts.txt optimized/common.txt
+```
+
+### Production Cost Control
+```bash
+# 1. Set strict budget
+ts session config --budget 10000
+
+# 2. Use cheaper models for simple tasks
+ts analyze --file simple.py --model minimax
+
+# 3. Reserve GPT-4 for complex tasks
+ts ask "complex refactor" --file hard.py --model gpt-4
+```
 
 ---
 
@@ -313,12 +460,9 @@ Yes — uses **tiktoken** which supports multiple encodings:
 
 ### Future features planned?
 
-- Prompt cost optimizer
-- Token reduction suggestions  
-- Batch prompt analysis
-- Repo-wide token estimation
-- Multi-model comparison table
 - Cost alerts via webhooks
+- Multi-user team dashboards
+- Integration with more IDEs (JetBrains, Neovim)
 
 ---
 

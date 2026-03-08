@@ -21,7 +21,11 @@
     "onCommand:tokencunt.clearSession",
     "onCommand:tokencunt.configureApiKey",
     "onCommand:tokencunt.configureModel",
-    "onCommand:tokencunt.viewSettings"
+    "onCommand:tokencunt.viewSettings",
+    "onCommand:tokencunt.scanRepository",
+    "onCommand:tokencunt.simulateCosts",
+    "onCommand:tokencunt.diffPrompts",
+    "onCommand:tokencunt.optimizePrompt"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -69,6 +73,26 @@
       {
         "command": "tokencunt.viewSettings",
         "title": "TokenCUNT: View Settings",
+        "category": "TokenCUNT"
+      },
+      {
+        "command": "tokencunt.scanRepository",
+        "title": "TokenCUNT: Scan Repository",
+        "category": "TokenCUNT"
+      },
+      {
+        "command": "tokencunt.simulateCosts",
+        "title": "TokenCUNT: Simulate Costs",
+        "category": "TokenCUNT"
+      },
+      {
+        "command": "tokencunt.diffPrompts",
+        "title": "TokenCUNT: Diff Prompts",
+        "category": "TokenCUNT"
+      },
+      {
+        "command": "tokencunt.optimizePrompt",
+        "title": "TokenCUNT: Optimize Prompt",
         "category": "TokenCUNT"
       }
     ],

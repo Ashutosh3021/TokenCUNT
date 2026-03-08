@@ -191,7 +191,7 @@ class PromptDiffer:
         orig_tokens = f"{stats.original_tokens:,}"
         opt_tokens = f"{stats.optimized_tokens:,}"
 
-        # Format percentage with arrow indicator (use ASCII-safe alternatives)
+        # Format percentage with ASCII-safe indicator
         if stats.percent_saved > 0:
             percent_indicator = f"(-{stats.percent_saved:.1f}%)"
         elif stats.percent_saved < 0:
@@ -210,7 +210,8 @@ class PromptDiffer:
         else:
             cost_indicator = "$0.000"
 
-        return f"Tokens: {orig_tokens} → {opt_tokens} ({percent_indicator})\nCost: {orig_cost} → {opt_cost} ({cost_indicator})"
+        # Use ASCII-safe arrow
+        return f"Tokens: {orig_tokens} -> {opt_tokens} ({percent_indicator})\nCost: {orig_cost} -> {opt_cost} ({cost_indicator})"
 
     def diff(
         self,

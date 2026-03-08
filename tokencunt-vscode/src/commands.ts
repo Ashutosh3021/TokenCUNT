@@ -214,6 +214,169 @@ export function registerCommands(context: vscode.ExtensionContext): vscode.Dispo
     })
   );
 
+  // ===== Category D: Advanced Features (Phase 4) =====
+
+  // Scan Repository
+  disposables.push(
+    vscode.commands.registerCommand('tokencunt.scanRepository', async () => {
+      const workspaceFolders = vscode.workspace.workspaceFolders;
+      const defaultPath = workspaceFolders?.[0]?.uri.fsPath || vscode.workspace.rootPath || '.';
+
+      const path = await vscode.window.showInputBox({
+        prompt: 'Enter directory path to scan',
+        value: defaultPath
+      });
+
+      if (!path) { return; }
+
+      vscode.window.showInformationMessage('Scanning repository...');
+      const result = await runCliCommand(['scan', path]);
+
+      if (result.exitCode === 0) {
+        const outputChannel = vscode.window.createOutputChannel('TokenCUNT Scan');
+        outputChannel.append(result.stdout);
+        outputChannel.show();
+      } else {
+        vscode.window.showErrorMessage(`Scan failed: ${result.stderr}`);
+      }
+    })
+  );
+
+  // Simulate Costs
+  disposables.push(
+    vscode.commands.registerCommand('tokencunt.simulateCosts', async () => {
+      const items: vscode.QuickPickItem[] = [
+        { label: 'dev', description: 'Developer - 50 req/day, 500 tokens' },
+        { label: 'startup', description: 'Startup - 500 req/day, 1000 tokens' },
+        { label: 'enterprise', description: 'Enterprise - 5000 req/day, 2000 tokens' },
+        { label: 'custom', description: 'Custom traffic pattern' }
+      ];
+
+      const selected = await vscode.window.showQuickPick(items, {
+        placeHolder: 'Select scenario'
+      });
+
+      if (!selected) { return; }
+
+      let result;
+      if (selected.label === 'custom') {
+        const requestsStr = await vscode.window.showInputBox({
+          prompt: 'Requests per day',
+          value: '1000'
+        });
+        const tokensStr = await vscode.window.showInputBox({
+          prompt: 'Average tokens per request',
+          value: '500'
+        });
+
+        if (!requestsStr || !tokensStr) { return; }
+        result = await runCliCommand(['simulate', '--requests', requestsStr, '--tokens', tokensStr]);
+      } else {
+        result = await runCliCommand(['simulate', '--scenario', selected.label]);
+      }
+
+      if (result.exitCode === 0) {
+        const outputChannel = vscode.window.createOutputChannel('TokenCUNT Cost Simulation');
+        outputChannel.append(result.stdout);
+        outputChannel.show();
+      } else {
+        vscode.window.showErrorMessage(`Simulation failed: ${result.stderr}`);
+      }
+    })
+  );
+
+  // Diff Prompts
+  disposables.push(
+    vscode.commands.registerCommand('tokencunt.diffPrompts', async () => {
+      const original = await vscode.window.showOpenDialog({
+        title: 'Select original prompt file',
+        canSelectMany: false
+      });
+
+      if (!original || !original[0]) { return; }
+
+      const optimized = await vscode.window.showOpenDialog({
+        title: 'Select optimized prompt file',
+        canSelectMany: false
+      });
+
+      if (!optimized || !optimized[0]) { return; }
+
+      const result = await runCliCommand([
+        'diff',
+        original[0].fsPath,
+        optimized[0].fsPath
+      ]);
+
+      if (result.exitCode === 0) {
+        const outputChannel = vscode.window.createOutputChannel('TokenCUNT Prompt Diff');
+        outputChannel.append(result.stdout);
+        outputChannel.show();
+      } else {
+        vscode.window.showErrorMessage(`Diff failed: ${result.stderr}`);
+      }
+    })
+  );
+
+  // Optimize Prompt
+  disposables.push(
+    vscode.commands.registerCommand('tokencunt.optimizePrompt', async () => {
+      const editor = vscode.window.activeTextEditor;
+      const selectedText = editor?.selection && !editor.selection.isEmpty
+        ? editor.document.getText(editor.selection)
+        : '';
+
+      const prompt = await vscode.window.showInputBox({
+        prompt: 'Enter prompt to optimize (or leave empty to use selection)',
+        value: selectedText || ''
+      });
+
+      if (prompt === undefined) { return; }
+
+      const items: vscode.QuickPickItem[] = [
+        { label: 'hybrid', description: 'Use both AI and rules (default)' },
+        { label: 'rules-only', description: 'Use rule-based optimization only' },
+        { label: 'ai-only', description: 'Use AI optimization only (requires API key)' }
+      ];
+
+      const mode = await vscode.window.showQuickPick(items, {
+        placeHolder: 'Select optimization mode'
+      });
+
+      if (!mode) { return; }
+
+      const args = ['optimize'];
+      if (mode.label === 'rules-only') {
+        args.push('--rules-only');
+      } else if (mode.label === 'ai-only') {
+        args.push('--ai-only');
+      }
+
+      // Create temp file with prompt
+      const tempFile = path.join(
+        require('os').tmpdir(),
+        `tokencunt_optimize_${Date.now()}.txt`
+      );
+
+      try {
+        fs.writeFileSync(tempFile, prompt, 'utf-8');
+        args.push(tempFile);
+
+        const result = await runCliCommand(args);
+
+        if (result.exitCode === 0) {
+          const outputChannel = vscode.window.createOutputChannel('TokenCUNT Optimization');
+          outputChannel.append(result.stdout);
+          outputChannel.show();
+        } else {
+          vscode.window.showErrorMessage(`Optimization failed: ${result.stderr}`);
+        }
+      } finally {
+        try { fs.unlinkSync(tempFile); } catch { /* ignore */ }
+      }
+    })
+  );
+
   // View Settings
   disposables.push(
     vscode.commands.registerCommand('tokencunt.viewSettings', async () => {
@@ -242,7 +405,13 @@ export function registerCommands(context: vscode.ExtensionContext): vscode.Dispo
         { label: '📊 Show Report', description: 'View current usage report' },
         { label: '💰 Set Budget', description: 'Configure token budget limit' },
         { label: '🔍 Analyze File', description: 'Analyze selected code' },
-        { label: '', description: '❓ AskAsk TokenCUNT a question' },
+        { label: '❓ Ask', description: 'Ask TokenCUNT a question' },
+        { label: '', description: '────── Advanced Features ──────' },
+        { label: '📁 Scan Repository', description: 'Scan project for token estimation' },
+        { label: '💵 Simulate Costs', description: 'Calculate monthly API costs' },
+        { label: '📝 Diff Prompts', description: 'Compare two prompt files' },
+        { label: '✨ Optimize Prompt', description: 'Optimize prompt with AI + rules' },
+        { label: '', description: '────── Settings ──────' },
         { label: '🗑️ Clear Session', description: 'Clear current session' },
         { label: '⚙️ Configure API Key', description: 'Set your MiniMax API key' },
         { label: '🔧 Configure Model', description: 'Select AI model' },
@@ -263,6 +432,10 @@ export function registerCommands(context: vscode.ExtensionContext): vscode.Dispo
         '💰 Set Budget': 'tokencunt.setBudget',
         '🔍 Analyze File': 'tokencunt.analyzeFile',
         '❓ Ask': 'tokencunt.ask',
+        '📁 Scan Repository': 'tokencunt.scanRepository',
+        '💵 Simulate Costs': 'tokencunt.simulateCosts',
+        '📝 Diff Prompts': 'tokencunt.diffPrompts',
+        '✨ Optimize Prompt': 'tokencunt.optimizePrompt',
         '🗑️ Clear Session': 'tokencunt.clearSession',
         '⚙️ Configure API Key': 'tokencunt.configureApiKey',
         '🔧 Configure Model': 'tokencunt.configureModel',
