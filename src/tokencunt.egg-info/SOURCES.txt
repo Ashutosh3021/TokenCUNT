@@ -18,6 +18,7 @@ src/tokencunt/cli/commands/analyze.py
 src/tokencunt/cli/commands/ask.py
 src/tokencunt/cli/commands/batch.py
 src/tokencunt/cli/commands/diff.py
+src/tokencunt/cli/commands/optimize.py
 src/tokencunt/cli/commands/report.py
 src/tokencunt/cli/commands/scan.py
 src/tokencunt/cli/commands/session.py
@@ -29,6 +30,7 @@ src/tokencunt/core/budget.py
 src/tokencunt/core/differ.py
 src/tokencunt/core/exceptions.py
 src/tokencunt/core/optimizer.py
+src/tokencunt/core/prompt_optimizer.py
 src/tokencunt/core/scanner.py
 src/tokencunt/core/session.py
 src/tokencunt/core/simulator.py

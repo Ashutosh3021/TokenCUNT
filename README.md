@@ -1,9 +1,10 @@
 # TokenCUNT
 
-![Python Version](https://img.shields.io/badge/python-1.20.1-blue)
-![Version](https://img.shields.io/badge/version-1.20.1-green)
+![Python Version](https://img.shields.io/badge/python-3.10+-blue)
+![Version](https://img.shields.io/badge/version-1.0.0-green)
 ![License](https://img.shields.io/badge/license-MIT-yellow)
-![Status](https://img.shields.io/badge/status-In%20Progress-orange)
+[![PyPI](https://img.shields.io/badge/PyPI-tokencunt-blue)](https://pypi.org/project/tokencunt/)
+[![Downloads](https://img.shields.io/badge/downloads-1.0.0-green)](https://pypi.org/project/tokencunt/)
 [![Download VSIX](https://img.shields.io/badge/Download-VSIX-blue?logo=visual-studio-code)](tokencunt-vscode/tokencunt-1.38.1.vsix)
 
 ```
@@ -33,10 +34,7 @@ Most AI tools are careless with your tokens — redundant calls, bloated context
 ## Installation
 
 ```bash
-# Install TokenCUNT
-pip install tokencunt
-
-# Install with CLI dependencies (recommended)
+# Install TokenCUNT CLI (recommended)
 pip install tokencunt[cli]
 
 # Or install in development mode
@@ -53,15 +51,15 @@ pip install -e ".[cli,dev]"
 Download and install the VSCode extension:
 
 ```bash
-# Option 1: Install from VSIX file
-code --install-extension tokencunt-vscode/tokencunt-0.1.0.vsix
-
-# Option 2: Manual install
-# 1. Open VSCode
-# 2. Go to Extensions (Ctrl+Shift+X)
-# 3. Click "..." menu → "Install from VSIX"
-# 4. Select tokencunt-0.1.0.vsix
+# Install from VSIX file
+code --install-extension tokencunt-vscode/tokencunt-1.38.1.vsix
 ```
+
+Or manually:
+1. Open VSCode
+2. Go to Extensions (Ctrl+Shift+X)
+3. Click "..." menu → "Install from VSIX"
+4. Select `tokencunt-1.38.1.vsix`
 
 **VSCode Extension Features:**
 - Status bar with live token count
@@ -77,9 +75,13 @@ code --install-extension tokencunt-vscode/tokencunt-0.1.0.vsix
 ### 1. Configure your API key
 
 ```bash
-# Set environment variable
+# Set environment variable (Linux/Mac)
 export MINIMAX_API_KEY="your-api-key"
 export MINIMAX_GROUP_ID="your-group-id"
+
+# Set environment variable (Windows)
+set MINIMAX_API_KEY=your-api-key
+set MINIMAX_GROUP_ID=your-group-id
 
 # Or create a config file
 mkdir -p ~/.tokencunt
@@ -101,7 +103,7 @@ ts start
 ts ask "explain this function" --file main.py
 
 # Dry run — see the cost before committing
-ts ask "refactor this" --file app.py
+ts ask "refactor this" --file app.py --dry-run
 
 # Analyze a file and get suggestions
 ts analyze --file main.py
@@ -122,37 +124,43 @@ ts session config --budget 5000
 
 ## Commands
 
+### Core Commands
+
 | Command | Description |
 |---------|-------------|
 | `ts start` | Show logo and welcome message |
 | `ts ask "<prompt>" --file <file>` | Ask a question with token tracking |
-| `ts ask ...` (no flags) | Ask a question directly |
 | `ts ask ... --dry-run` | Preview token cost without API call |
 | `ts analyze --file <file>` | Analyze a file for improvements |
-| `ts analyze --file <file> --focus bugs` | Focus on specific area (bugs, performance, style, security) |
+| `ts analyze --file <file> --focus bugs` | Focus on bugs, performance, style, or security |
 | `ts batch --file <json>` | Run multiple tasks from JSON file |
 | `ts report` | Show session usage breakdown |
-| `ts report --format json` | JSON output for scripting |
-| `ts session new` | Create a new session |
-| `ts session list` | List all sessions |
-| `ts session config --budget 5000` | Set token budget for session |
-| `ts session clear` | Clear session data |
+| `ts report --json` | JSON output for scripting |
 | `ts version` | Show version information |
 
-### Phase 4: Advanced Features
+### Session Management
+
+| Command | Description |
+|---------|-------------|
+| `ts session new` | Create a new session |
+| `ts session list` | List all sessions |
+| `ts session config --budget 5000` | Set token budget |
+| `ts session clear` | Clear session data |
+
+### Advanced Features
 
 | Command | Description |
 |---------|-------------|
 | `ts scan <path>` | Scan project for token estimation |
 | `ts scan --extensions py,js --verbose` | Scan with specific extensions |
-| `ts scan --ignore .tokencuntignore` | Scan with custom ignore file |
+| `ts scan --ignore .tokencuntignore` | Custom ignore file |
 | `ts simulate --requests 1000 --tokens 500` | Simulate API costs |
-| `ts simulate --scenario startup --model gpt-4` | Use pre-defined scenario |
+| `ts simulate --scenario startup --model abab6.5` | Pre-defined scenario |
 | `ts simulate --users 100 --messages 50 --tokens 300` | User-based scenario |
 | `ts diff original.txt optimized.txt` | Git-style prompt diff |
 | `ts diff --stats` | Show only statistics |
 | `ts optimize prompt.txt` | Optimize with AI + rules |
-| `ts optimize prompt.txt --rules-only` | Rules-only optimization |
+| `ts optimize prompt.txt --rules-only` | Rules-only (free & instant) |
 | `ts optimize --show-diff` | Show changes made |
 
 ### Global Options
@@ -167,7 +175,7 @@ ts session config --budget 5000
 
 ---
 
-### Example Output
+## Example Output
 
 ```
 $ ts ask "what does this function do?" --file utils.py
@@ -187,19 +195,21 @@ $ ts ask "what does this function do?" --file utils.py
 ```
 ┌─────────────────────────────────────┐
 │         User Interface              │
-│   CLI Tool  │  VSCode Extension     │
+│   CLI Tool  │  VSCode Extension    │
 └─────────────┬───────────────────────┘
               │
 ┌─────────────▼───────────────────────┐
-│           Core Engine               │
-│  - Token counter & tracker          │
-│  - Smart batcher                   │
-│  - Budget enforcer                 │
+│           Core Engine              │
+│  - Token counter & tracker        │
+│  - Smart batcher                  │
+│  - Budget enforcer                │
 │  - Prompt optimizer                │
+│  - Scanner & Simulator            │
+│  - Diff & Compare                 │
 └─────────────┬───────────────────────┘
               │
 ┌─────────────▼───────────────────────┐
-│         MiniMax M2.5 API            │
+│         MiniMax M2.5 API           │
 └─────────────────────────────────────┘
 ```
 
@@ -211,36 +221,40 @@ The core engine is shared — CLI and VSCode extension are just interfaces on to
 
 ```
 TokenCUNT/
-├── src/tokencunt/
+├── src/tokencunt/               # Main package
 │   ├── __init__.py
-│   ├── pyproject.toml
-│   ├── config.py                 # Configuration management
-│   └── core/
-│       ├── __init__.py           # Core exports
-│       ├── api_client.py         # MiniMax API calls with retry
-│       ├── exceptions.py         # Custom exception classes
-│       ├── token_counter.py     # Token counting (tiktoken)
-│       ├── budget.py            # Budget enforcement & alerts
-│       ├── batcher.py           # Combine small requests
-│       ├── optimizer.py         # Compress & strip redundant context
-│       └── session.py           # Track usage across sessions
-├── cli/
-│   ├── __init__.py
-│   ├── app.py                   # Typer app entry point
-│   ├── logo.py                  # ASCII logo
-│   ├── exit_codes.py            # Exit codes
-│   ├── formatters.py            # Rich output formatting
-│   └── commands/
+│   ├── config.py                # Configuration management
+│   ├── cli/                     # CLI interface
+│   │   ├── app.py               # Typer entry point
+│   │   ├── logo.py              # ASCII logo
+│   │   ├── formatters.py        # Rich output
+│   │   └── commands/            # CLI commands
+│   │       ├── ask.py
+│   │       ├── analyze.py
+│   │       ├── batch.py
+│   │       ├── report.py
+│   │       ├── session.py
+│   │       ├── scan.py
+│   │       ├── simulate.py
+│   │       ├── diff.py
+│   │       └── optimize.py
+│   └── core/                    # Core engine
 │       ├── __init__.py
-│       ├── ask.py               # Ask command
-│       ├── analyze.py           # Analyze command
-│       ├── batch.py             # Batch command
-│       ├── report.py            # Report command
-│       └── session.py           # Session management
-├── tests/
-├── .planning/                    # GSD planning docs
-├── ascii-art.txt               # Logo source
-├── pyproject.toml              # Project config
+│       ├── api_client.py        # MiniMax API
+│       ├── token_counter.py    # Token counting
+│       ├── budget.py            # Budget enforcement
+│       ├── batcher.py           # Smart batching
+│       ├── optimizer.py        # Prompt optimization
+│       ├── session.py          # Session tracking
+│       ├── scanner.py          # Project scanner
+│       ├── simulator.py        # Cost simulator
+│       ├── differ.py           # Prompt differ
+│       └── exceptions.py       # Custom exceptions
+├── tokencunt-vscode/           # VSCode extension
+│   ├── src/                    # TypeScript source
+│   ├── out/                    # Compiled JS
+│   └── tokencunt-1.38.1.vsix   # Extension package
+├── pyproject.toml              # Package config
 └── README.md
 ```
 
@@ -251,7 +265,7 @@ TokenCUNT/
 | Tool | Role |
 |------|------|
 | [Typer](https://typer.tiangolo.com/) | CLI framework |
-| [Rich](https://github.com/Textualize/rich) | Terminal output formatting |
+| [Rich](https://github.com/Textualize/rich) | Terminal output |
 | [httpx](https://www.python-httpx.org/) | Async HTTP client |
 | [tiktoken](https://github.com/openai/tiktoken) | Token counting |
 | [Tenacity](https://tenacity.readthedocs.io/) | Retry logic |
@@ -264,8 +278,13 @@ TokenCUNT/
 ### Environment Variables
 
 ```bash
-MINIMAX_API_KEY=your-api-key
-MINIMAX_GROUP_ID=your-group-id
+# Linux/Mac
+export MINIMAX_API_KEY=your-api-key
+export MINIMAX_GROUP_ID=your-group-id
+
+# Windows
+set MINIMAX_API_KEY=your-api-key
+set MINIMAX_GROUP_ID=your-group-id
 ```
 
 ### Config File
@@ -281,9 +300,9 @@ default_budget: 10000
 
 ### Priority Order
 
-1. Environment variables (highest priority)
+1. Environment variables (highest)
 2. Config file
-3. Hardcoded defaults (lowest priority)
+3. Hardcoded defaults (lowest)
 
 ---
 
@@ -294,204 +313,92 @@ default_budget: 10000
 | 1 | Core engine (Python) | ✅ Done |
 | 2 | CLI Tool | ✅ Done |
 | 3 | VSCode Extension | ✅ Done |
-| 4 | Advanced Features (scan, simulate, diff, optimize) | ✅ Done |
+| 4 | Advanced Features | ✅ Done |
 
 ---
 
-## Pro Tips for Maximum Leverage
+## Pro Tips
 
-### 1. Use `ts scan` Before Starting New Projects
+### 1. Use `ts scan` Before New Projects
 
 ```bash
-# Get a baseline of your project size
 ts scan ./src
-
 # Know your context window limits
-# Large projects = split into smaller prompts
 ```
 
 ### 2. Set Budget Alerts Early
 
 ```bash
-# Set a monthly budget
 ts session config --budget 50000
-
-# The extension will warn you at 80%
-# You can stop before hitting the limit
+# Warning at 80%
 ```
 
-### 3. Use `ts diff` to Compare Prompt Strategies
+### 3. Use `ts diff` to Compare Prompts
 
 ```bash
-# Compare verbose vs concise prompts
-ts diff verbose_prompt.txt concise_prompt.txt
-
-# See exactly how much you're saving
-# Use the optimized version in production
+ts diff verbose.txt concise.txt
 ```
 
 ### 4. Optimize with Rules-First (Free!)
 
 ```bash
-# Rules-only is instant and free
 ts optimize prompt.txt --rules-only
-
-# Then enhance with AI if needed
-ts optimize optimized.txt --ai-only --show-diff
 ```
 
 ### 5. Simulate Before Scaling
 
 ```bash
-# Before launching to 1000 users
-ts simulate --users 1000 --messages 100 --tokens 500 --model gpt-4
-
-# Know your monthly burn rate
-# Adjust model to fit budget
+ts simulate --users 1000 --messages 100 --tokens 500
 ```
 
-### 6. Use the VSCode Extension for Quick Analysis
-
-- **Analyze selected code** — Select code → right-click → TokenCUNT: Analyze
-- **Quick prompts** — Use command palette for fast access
-- **Status bar** — Always know your current session usage
-
-### 7. Batch Similar Tasks
+### 6. Use `--dry-run` for Cost Preview
 
 ```bash
-# Create tasks.json
-# {
-#   "tasks": [
-#     {"prompt": "Explain function 1", "file": "src/a.py"},
-#     {"prompt": "Explain function 2", "file": "src/b.py"}
-#   ]
-# }
-
-ts batch --file tasks.json --parallel
-```
-
-### 8. Use `--dry-run` for Cost Previewing
-
-```bash
-# Always check cost first
-ts ask "refactor this entire file" --file huge.py --dry-run
-
-# If too expensive, break into smaller chunks
-ts ask "refactor first 50 lines" --file huge.py
-```
-
----
-
-## Example Workflows
-
-### Daily Development
-```bash
-# Morning: Check budget
-ts report
-
-# During: Analyze before asking
-ts analyze --file problem.py --focus bugs
-
-# Ask with tracking
-ts ask "fix this bug" --file problem.py
-
-# End: Review spending
-ts report
-```
-
-### Project Token Audit
-```bash
-# 1. Scan entire project
-ts scan ./src --verbose
-
-# 2. Simulate your usage pattern
-ts simulate --scenario startup --model minimax
-
-# 3. Optimize your most-used prompts
-ts optimize common_prompts.txt --rules-only --output optimized/
-
-# 4. Diff to compare
-ts diff common_prompts.txt optimized/common.txt
-```
-
-### Production Cost Control
-```bash
-# 1. Set strict budget
-ts session config --budget 10000
-
-# 2. Use cheaper models for simple tasks
-ts analyze --file simple.py --model minimax
-
-# 3. Reserve GPT-4 for complex tasks
-ts ask "complex refactor" --file hard.py --model gpt-4
+ts ask "refactor all" --file huge.py --dry-run
 ```
 
 ---
 
 ## FAQ
 
-### What exact problem does TokenCUNT solve?
+### What problem does TokenCUNT solve?
 
-TokenCUNT solves the problem of **uncontrolled API costs** when using AI models. Most developers have no visibility into how many tokens their prompts consume, leading to surprise bills at the end of the month. TokenCUNT provides:
+TokenCUNT solves **uncontrolled API costs** with AI models:
 
-- **Pre-call estimation** — Know token cost BEFORE making API calls
-- **Budget enforcement** — Hard limits prevent runaway spending
-- **Usage transparency** — Real-time tracking of all API usage
-- **Session history** — Know exactly what you spent each session
+- **Pre-call estimation** — Know cost BEFORE making calls
+- **Budget enforcement** — Hard limits prevent overspending
+- **Usage transparency** — Real-time tracking
+- **Session history** — Know exactly what you spent
 
-### Who is the primary user?
+### Who is it for?
 
-- **AI developers** building apps with LLMs
-- **SaaS builders** integrating AI into products
-- **Students** learning about LLMs on limited budgets
-- **Freelancers** managing client API budgets
-
-### What input does the user give?
-
-- **Raw text** — Direct prompts
-- **Files** — `.txt`, `.py`, `.js`, `.md`, or any text file
-- **Multiple files** — Via batch processing
-
-### What output does the tool return?
-
-- **Token count** — Before and after API calls
-- **Cost estimation** — Based on model pricing
-- **Session reports** — Detailed breakdown of usage
+- AI developers building LLM apps
+- SaaS builders integrating AI
+- Students on limited budgets
+- Freelancers managing client budgets
 
 ### Which models are supported?
 
 Currently: **MiniMax** models (abab6.5-chat family)
 
-Future support planned:
+### Future support?
+
 - OpenAI (GPT-4, GPT-3.5)
 - Anthropic (Claude)
 - Google Gemini
 
-### Does it support multiple tokenizers?
+### What tokenizers?
 
-Yes — uses **tiktoken** which supports multiple encodings:
-- cl100k_base (GPT-4, Claude, etc.)
+Uses **tiktoken** supporting:
+- cl100k_base (GPT-4, Claude)
 - p50k_base (GPT-3)
 - r50k_base (GPT-2)
-
-### What makes TokenCUNT better than existing token counters?
-
-1. **Pre-call estimation** — Most counters only count AFTER the call
-2. **Budget enforcement** — Most counters only track, don't prevent overspending
-3. **Integrated CLI** — Ready to use, not just a library
-4. **IDE integration** — VSCode extension with inline hints
-
-### Future features planned?
-
-- Cost alerts via webhooks
-- Multi-user team dashboards
-- Integration with more IDEs (JetBrains, Neovim)
 
 ---
 
 ## Contributing
 
-Built by a student, for developers who actually care about not burning credits. PRs and issues welcome.
+PRs and issues welcome! Built by a student, for developers who care about not burning credits.
 
 ---
 
